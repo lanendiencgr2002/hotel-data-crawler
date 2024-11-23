@@ -27,10 +27,10 @@ def 将公司地址写入文件(公司地址):
 
 def 测试获取所有公司地址():
     tab=page.new_tab()
-    companies=page.ele('text:Companies')
-    if not companies:return False
     for i in 公司名列表:
         查公司名字(tab,i)
+        companies=tab.ele('text:Companies')
+        if not companies:return False
         公司地址=获得公司列表栏(tab)
         将公司地址写入文件(f"{i}:{len(公司地址)}")
         for j in 公司地址:
@@ -167,12 +167,12 @@ def 获取人数(tab):
 def 获得公司列表栏(tab):
     try:
         条件1='.zp_hWv1I'
-        第一个大框=tab.eles(条件1,timeout=.3)[1]
+        第一个大框=tab.eles(条件1,timeout=1)[1]
 
         条件='.zp_7UCkf zp_cThXP zp_MLi4w zp_PTp8r'
-        人数=第一个大框.eles(条件,timeout=.3)[2].text
+        人数=第一个大框.eles(条件,timeout=1)[2].text
         print('人数',人数)
-        urls=第一个大框.eles('tag:a',timeout=.3)
+        urls=第一个大框.eles('tag:a',timeout=1)
         urlres=[]
         for i in urls:
             print(i.attr('href'))
@@ -363,84 +363,6 @@ def 多进程爬取():
                 print(f"\n处理公司时发生错误: {str(e)}")
     
     print(f"\n\n爬取完成！成功: {成功数}家公司，失败: {失败数}家公司")
-
-def 单进程爬取任意邮件(公司地址):
-    try:
-        # 创建新标签页
-        tab = page.new_tab()
-        
-        # 爬取公司邮件
-        爬取结果 = 爬取公司任意邮件(tab, 公司地址)
-        
-        if 爬取结果 == "ok":
-            # 记录已完成的公司
-            已完成公司文件 = os.path.join(当前目录, '已完成邮件公司.txt')
-            with open(已完成公司文件, 'a', encoding='utf-8') as f:
-                f.write(f"{公司地址}\n")
-        else:
-            # 记录错误信息
-            错误文件 = os.path.join(当前目录, '邮件错误信息.txt')
-            if not os.path.exists(错误文件):
-                with open(错误文件, 'w', encoding='utf-8') as f:
-                    pass
-            with open(错误文件, 'a', encoding='utf-8') as f:
-                f.write(f"{公司地址} 错误信息:{爬取结果}\n")
-            tab.close()
-            return False
-            
-        # 关闭标签页
-        tab.close()
-        return True
-        
-    except Exception as e:
-        print(f"爬取公司邮件 {公司地址} 时发生错误: {str(e)}")
-        print(traceback.format_exc())
-        return False
-
-def 多进程爬取任意邮件():
-    公司地址列表 = 读所有公司地址()
-    最大进程数 = 5
-    已完成公司文件 = os.path.join(当前目录, '已完成邮件公司.txt')
-    
-    # 创建已完成公司记录文件（如果不存在）
-    if not os.path.exists(已完成公司文件):
-        with open(已完成公司文件, 'w', encoding='utf-8'):
-            pass
-            
-    # 读取已完成的公司地址
-    已完成公司地址 = set()
-    with open(已完成公司文件, 'r', encoding='utf-8') as f:
-        已完成公司地址 = set(line.strip() for line in f if line.strip())
-    
-    # 过滤掉已完成的公司地址
-    待爬取公司 = [地址 for 地址 in 公司地址列表 if 地址 not in 已完成公司地址]
-    
-    print(f"总共有{len(公司地址列表)}个公司地址")
-    print(f"已完成{len(已完成公司地址)}个公司")
-    print(f"待爬取{len(待爬取公司)}个公司")
-    
-    # 使用进程池持续处理
-    with Pool(最大进程数) as pool:
-        # 异步提交所有任务
-        结果 = []
-        for 公司地址 in 待爬取公司:
-            结果.append(pool.apply_async(单进程爬取任意邮件, (公司地址,)))
-        
-        # 等待所有任务完成并统计结果
-        成功数 = 0
-        失败数 = 0
-        for i, future in enumerate(结果, 1):
-            try:
-                if future.get():  # 获取进程执行结果
-                    成功数 += 1
-                else:
-                    失败数 += 1
-                print(f"\r当前进度: {i}/{len(待爬取公司)}, 成功: {成功数}, 失败: {失败数}", end="")
-            except Exception as e:
-                失败数 += 1
-                print(f"\n处理公司时发生错误: {str(e)}")
-    
-    print(f"\n\n爬取完成！成功获取到邮件的公司: {成功数}家，失败: {失败数}家公司")
 
 def 测试主流程():
     tabs=drissionpage_utils.创建多个标签页对象(page,5)

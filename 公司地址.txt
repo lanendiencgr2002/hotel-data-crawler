@@ -370,3 +370,8 @@ Ceria Hotel:0
 Ashley Boutique Hotel:0
 The Platinum Suites KLCC by Skyworld:0
 Sakura Boutique Hotel:0
+Royce Residence KLCC by ALMA:0
+The Platinum 2 Kuala Lumpur by ALMA:0
+Imperial Lexis Kuala Lumpur:0
+PARKROYAL COLLECTION Kuala Lumpur:1
+https://app.apollo.io/#/organizations/627256c6bc36f800d808aea1?
